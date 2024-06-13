@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   async login(user: Omit<User, 'password'>) {
-    const payload = { name: user.name, id: user.id };
+    const payload = { username: user.name, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload, { privateKey: jwtConstants.secret }),
     }
@@ -32,7 +32,7 @@ export class AuthService {
   async register(user: CreateUserDto) {
     const { id, name } = await this.userService.register(user)
     return {
-      access_token: this.jwtService.sign({ id, name }, { privateKey: jwtConstants.secret })
+      access_token: this.jwtService.sign({ sub: id, username: name }, { privateKey: jwtConstants.secret })
     }
   }
 }

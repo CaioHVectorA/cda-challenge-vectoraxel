@@ -193,7 +193,7 @@ module.exports = function (updatedModules, renewedModules) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(4);
 const app_module_1 = __webpack_require__(5);
-const cookieParser = __webpack_require__(24);
+const cookieParser = __webpack_require__(32);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(cookieParser());
@@ -232,19 +232,20 @@ const app_controller_1 = __webpack_require__(7);
 const app_service_1 = __webpack_require__(8);
 const prisma_module_1 = __webpack_require__(9);
 const user_module_1 = __webpack_require__(12);
-const auth_module_1 = __webpack_require__(16);
-const auth_controller_1 = __webpack_require__(19);
+const auth_module_1 = __webpack_require__(20);
+const auth_controller_1 = __webpack_require__(24);
 const user_controller_1 = __webpack_require__(15);
-const auth_service_1 = __webpack_require__(17);
+const auth_service_1 = __webpack_require__(21);
 const user_service_1 = __webpack_require__(13);
-const jwt_1 = __webpack_require__(18);
+const jwt_1 = __webpack_require__(22);
 const prisma_service_1 = __webpack_require__(10);
+const config_1 = __webpack_require__(30);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, user_module_1.UserModule, auth_module_1.AuthModule, jwt_1.JwtModule],
+        imports: [prisma_module_1.PrismaModule, config_1.ConfigModule.forRoot({ isGlobal: true }), user_module_1.UserModule, auth_module_1.AuthModule, jwt_1.JwtModule],
         controllers: [app_controller_1.AppController, auth_controller_1.AuthController, user_controller_1.UserController],
         providers: [app_service_1.AppService, auth_service_1.AuthService, user_service_1.UserService, prisma_service_1.PrismaService],
     })
@@ -496,17 +497,34 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserController = void 0;
 const common_1 = __webpack_require__(6);
 const user_service_1 = __webpack_require__(13);
+const jwt_auth_guard_1 = __webpack_require__(16);
+const current_user_decorator_1 = __webpack_require__(18);
+const current_user_dto_1 = __webpack_require__(19);
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
     }
+    getPrivateData(user) {
+        return `${user.userId}, ${user.username}`;
+    }
 };
 exports.UserController = UserController;
+__decorate([
+    (0, common_1.Get)('/user'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "getPrivateData", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UserService !== "undefined" && user_service_1.UserService) === "function" ? _a : Object])
@@ -526,19 +544,81 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtAuthGuard = void 0;
+const common_1 = __webpack_require__(6);
+const passport_1 = __webpack_require__(17);
+let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
+};
+exports.JwtAuthGuard = JwtAuthGuard;
+exports.JwtAuthGuard = JwtAuthGuard = __decorate([
+    (0, common_1.Injectable)()
+], JwtAuthGuard);
+
+
+/***/ }),
+/* 17 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("@nestjs/passport");
+
+/***/ }),
+/* 18 */
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CurrentUser = void 0;
+const common_1 = __webpack_require__(6);
+exports.CurrentUser = (0, common_1.createParamDecorator)((data, ctx) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.user;
+});
+
+
+/***/ }),
+/* 19 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CurrentUserDto = void 0;
+class CurrentUserDto {
+}
+exports.CurrentUserDto = CurrentUserDto;
+
+
+/***/ }),
+/* 20 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
 const common_1 = __webpack_require__(6);
-const auth_service_1 = __webpack_require__(17);
+const auth_service_1 = __webpack_require__(21);
 const user_module_1 = __webpack_require__(12);
-const jwt_1 = __webpack_require__(18);
-const auth_controller_1 = __webpack_require__(19);
+const jwt_1 = __webpack_require__(22);
+const auth_controller_1 = __webpack_require__(24);
 const constants_1 = __webpack_require__(23);
+const passport_1 = __webpack_require__(17);
+const jwt_strategy_1 = __webpack_require__(29);
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            passport_1.PassportModule,
             jwt_1.JwtModule.register({
                 global: true,
                 secret: constants_1.jwtConstants.secret,
@@ -547,7 +627,7 @@ exports.AuthModule = AuthModule = __decorate([
             }),
             user_module_1.UserModule,
         ],
-        providers: [auth_service_1.AuthService],
+        providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService],
     })
@@ -555,7 +635,7 @@ exports.AuthModule = AuthModule = __decorate([
 
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -573,7 +653,7 @@ var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
 const common_1 = __webpack_require__(6);
-const jwt_1 = __webpack_require__(18);
+const jwt_1 = __webpack_require__(22);
 const bcrypt = __webpack_require__(14);
 const user_service_1 = __webpack_require__(13);
 const constants_1 = __webpack_require__(23);
@@ -593,7 +673,7 @@ let AuthService = class AuthService {
         return false;
     }
     async login(user) {
-        const payload = { name: user.name, id: user.id };
+        const payload = { username: user.name, sub: user.id };
         return {
             access_token: this.jwtService.sign(payload, { privateKey: constants_1.jwtConstants.secret }),
         };
@@ -601,7 +681,7 @@ let AuthService = class AuthService {
     async register(user) {
         const { id, name } = await this.userService.register(user);
         return {
-            access_token: this.jwtService.sign({ id, name }, { privateKey: constants_1.jwtConstants.secret })
+            access_token: this.jwtService.sign({ sub: id, username: name }, { privateKey: constants_1.jwtConstants.secret })
         };
     }
 };
@@ -613,14 +693,27 @@ exports.AuthService = AuthService = __decorate([
 
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("@nestjs/jwt");
 
 /***/ }),
-/* 19 */
+/* 23 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.jwtConstants = void 0;
+exports.jwtConstants = {
+    secret: process.env.JWT_SECRET ?? 'SECRET'
+};
+
+
+/***/ }),
+/* 24 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -641,10 +734,10 @@ var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = void 0;
 const common_1 = __webpack_require__(6);
-const auth_service_1 = __webpack_require__(17);
-const create_user_dto_1 = __webpack_require__(20);
-const login_user_dto_1 = __webpack_require__(22);
-const express_1 = __webpack_require__(27);
+const auth_service_1 = __webpack_require__(21);
+const create_user_dto_1 = __webpack_require__(25);
+const login_user_dto_1 = __webpack_require__(27);
+const express_1 = __webpack_require__(28);
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -688,7 +781,7 @@ exports.AuthController = AuthController = __decorate([
 
 
 /***/ }),
-/* 20 */
+/* 25 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -704,7 +797,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateUserDto = void 0;
-const class_validator_1 = __webpack_require__(21);
+const class_validator_1 = __webpack_require__(26);
 class CreateUserDto {
 }
 exports.CreateUserDto = CreateUserDto;
@@ -719,14 +812,14 @@ __decorate([
 
 
 /***/ }),
-/* 21 */
+/* 26 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("class-validator");
 
 /***/ }),
-/* 22 */
+/* 27 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -739,227 +832,73 @@ exports.LoginUserDto = LoginUserDto;
 
 
 /***/ }),
-/* 23 */
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.jwtConstants = void 0;
-exports.jwtConstants = {
-    secret: process.env.JWT_SECRET ?? 'SECRET'
-};
-
-
-/***/ }),
-/* 24 */
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-"use strict";
-/*!
- * cookie-parser
- * Copyright(c) 2014 TJ Holowaychuk
- * Copyright(c) 2015 Douglas Christopher Wilson
- * MIT Licensed
- */
-
-
-
-/**
- * Module dependencies.
- * @private
- */
-
-var cookie = __webpack_require__(25)
-var signature = __webpack_require__(26)
-
-/**
- * Module exports.
- * @public
- */
-
-module.exports = cookieParser
-module.exports.JSONCookie = JSONCookie
-module.exports.JSONCookies = JSONCookies
-module.exports.signedCookie = signedCookie
-module.exports.signedCookies = signedCookies
-
-/**
- * Parse Cookie header and populate `req.cookies`
- * with an object keyed by the cookie names.
- *
- * @param {string|array} [secret] A string (or array of strings) representing cookie signing secret(s).
- * @param {Object} [options]
- * @return {Function}
- * @public
- */
-
-function cookieParser (secret, options) {
-  var secrets = !secret || Array.isArray(secret)
-    ? (secret || [])
-    : [secret]
-
-  return function cookieParser (req, res, next) {
-    if (req.cookies) {
-      return next()
-    }
-
-    var cookies = req.headers.cookie
-
-    req.secret = secrets[0]
-    req.cookies = Object.create(null)
-    req.signedCookies = Object.create(null)
-
-    // no cookies
-    if (!cookies) {
-      return next()
-    }
-
-    req.cookies = cookie.parse(cookies, options)
-
-    // parse signed cookies
-    if (secrets.length !== 0) {
-      req.signedCookies = signedCookies(req.cookies, secrets)
-      req.signedCookies = JSONCookies(req.signedCookies)
-    }
-
-    // parse JSON cookies
-    req.cookies = JSONCookies(req.cookies)
-
-    next()
-  }
-}
-
-/**
- * Parse JSON cookie string.
- *
- * @param {String} str
- * @return {Object} Parsed object or undefined if not json cookie
- * @public
- */
-
-function JSONCookie (str) {
-  if (typeof str !== 'string' || str.substr(0, 2) !== 'j:') {
-    return undefined
-  }
-
-  try {
-    return JSON.parse(str.slice(2))
-  } catch (err) {
-    return undefined
-  }
-}
-
-/**
- * Parse JSON cookies.
- *
- * @param {Object} obj
- * @return {Object}
- * @public
- */
-
-function JSONCookies (obj) {
-  var cookies = Object.keys(obj)
-  var key
-  var val
-
-  for (var i = 0; i < cookies.length; i++) {
-    key = cookies[i]
-    val = JSONCookie(obj[key])
-
-    if (val) {
-      obj[key] = val
-    }
-  }
-
-  return obj
-}
-
-/**
- * Parse a signed cookie string, return the decoded value.
- *
- * @param {String} str signed cookie string
- * @param {string|array} secret
- * @return {String} decoded value
- * @public
- */
-
-function signedCookie (str, secret) {
-  if (typeof str !== 'string') {
-    return undefined
-  }
-
-  if (str.substr(0, 2) !== 's:') {
-    return str
-  }
-
-  var secrets = !secret || Array.isArray(secret)
-    ? (secret || [])
-    : [secret]
-
-  for (var i = 0; i < secrets.length; i++) {
-    var val = signature.unsign(str.slice(2), secrets[i])
-
-    if (val !== false) {
-      return val
-    }
-  }
-
-  return false
-}
-
-/**
- * Parse signed cookies, returning an object containing the decoded key/value
- * pairs, while removing the signed key from obj.
- *
- * @param {Object} obj
- * @param {string|array} secret
- * @return {Object}
- * @public
- */
-
-function signedCookies (obj, secret) {
-  var cookies = Object.keys(obj)
-  var dec
-  var key
-  var ret = Object.create(null)
-  var val
-
-  for (var i = 0; i < cookies.length; i++) {
-    key = cookies[i]
-    val = obj[key]
-    dec = signedCookie(val, secret)
-
-    if (val !== dec) {
-      ret[key] = dec
-      delete obj[key]
-    }
-  }
-
-  return ret
-}
-
-
-/***/ }),
-/* 25 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("cookie");
-
-/***/ }),
-/* 26 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("cookie-signature");
-
-/***/ }),
-/* 27 */
+/* 28 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("express");
+
+/***/ }),
+/* 29 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.JwtStrategy = void 0;
+const common_1 = __webpack_require__(6);
+const config_1 = __webpack_require__(30);
+const passport_1 = __webpack_require__(17);
+const passport_jwt_1 = __webpack_require__(31);
+let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
+    constructor(config) {
+        super({
+            secretOrKey: config.getOrThrow(process.env.JWT_SECRET),
+            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
+            ignoreExpiration: false
+        });
+    }
+    async validate(payload) {
+        return { userId: payload.sub, username: payload.username };
+    }
+};
+exports.JwtStrategy = JwtStrategy;
+exports.JwtStrategy = JwtStrategy = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+], JwtStrategy);
+
+
+/***/ }),
+/* 30 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("@nestjs/config");
+
+/***/ }),
+/* 31 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("passport-jwt");
+
+/***/ }),
+/* 32 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("cookie-parser");
 
 /***/ })
 /******/ 	]);
@@ -1023,7 +962,7 @@ module.exports = require("express");
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("c6a67d19e1c9812505ee")
+/******/ 		__webpack_require__.h = () => ("0fefd10396c74ea44870")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

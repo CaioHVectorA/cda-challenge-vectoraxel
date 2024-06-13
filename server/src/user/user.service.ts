@@ -8,9 +8,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class UserService {
     constructor(private readonly prismaService: PrismaService) {}
-    // async login(data: LoginUserDto): Promise<string> {
-
-    // }
     async register(payload: CreateUserDto): Promise<User> {
         const password = await bcrypt.hash(payload.password, 10)
         const data = { ...payload, password }

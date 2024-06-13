@@ -33,6 +33,7 @@ model Badge {
   name         String
   image        String
   BadgesOfUser BadgesOfUser[]
+  level        Int // 1 - Bronze | 2 - Prata | 3 - Ouro
 
   @@map("badges")
 }
