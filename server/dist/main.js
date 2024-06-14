@@ -193,11 +193,11 @@ module.exports = function (updatedModules, renewedModules) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(4);
 const app_module_1 = __webpack_require__(5);
-const cookieParser = __webpack_require__(32);
+const cookieParser = __webpack_require__(36);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(cookieParser());
-    await app.listen(3000);
+    await app.listen(3333);
     if (true) {
         module.hot.accept();
         module.hot.dispose(() => app.close());
@@ -240,12 +240,13 @@ const user_service_1 = __webpack_require__(13);
 const jwt_1 = __webpack_require__(22);
 const prisma_service_1 = __webpack_require__(10);
 const config_1 = __webpack_require__(30);
+const badge_module_1 = __webpack_require__(32);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, config_1.ConfigModule.forRoot({ isGlobal: true }), user_module_1.UserModule, auth_module_1.AuthModule, jwt_1.JwtModule],
+        imports: [prisma_module_1.PrismaModule, config_1.ConfigModule.forRoot({ isGlobal: true }), user_module_1.UserModule, auth_module_1.AuthModule, jwt_1.JwtModule, badge_module_1.BadgeModule],
         controllers: [app_controller_1.AppController, auth_controller_1.AuthController, user_controller_1.UserController],
         providers: [app_service_1.AppService, auth_service_1.AuthService, user_service_1.UserService, prisma_service_1.PrismaService],
     })
@@ -464,8 +465,27 @@ let UserService = class UserService {
         const userCreated = await this.prismaService.user.create({ data });
         return userCreated;
     }
+    async edit(edit) {
+        const { user_id, ...data } = edit;
+        const user = await this.prismaService.user.findUnique({ where: { id: user_id } });
+        if (!user)
+            throw new common_1.NotFoundException("Usuário não encontrado!");
+        if (!data.name && !data.profile_picture)
+            throw new common_1.BadRequestException("Nada para editar!");
+        await this.prismaService.user.update({ where: { id: user_id }, data });
+        return true;
+    }
     async findByEmail(email) {
         return this.prismaService.user.findFirst({ where: { email } });
+    }
+    async find(id) {
+        if (!id)
+            throw new common_1.BadRequestException("Usuário não encontrado!");
+        const found = await this.prismaService.user.findUnique({ where: { id } });
+        if (!found)
+            throw new common_1.NotFoundException("Usuário não encontrado!");
+        const { password, ...data } = found;
+        return data;
     }
 };
 exports.UserService = UserService;
@@ -500,7 +520,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
+var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserController = void 0;
 const common_1 = __webpack_require__(6);
@@ -513,18 +533,33 @@ let UserController = class UserController {
         this.userService = userService;
     }
     getPrivateData(user) {
-        return `${user.userId}, ${user.username}`;
+        return this.userService.find(user.userId || null);
+    }
+    async editUserData(user, body) {
+        const sucess = await this.userService.edit({ ...body, user_id: user.userId });
+        if (!sucess)
+            throw new common_1.BadRequestException("Erro ao editar usuário!");
+        return { message: "Usuário editado com sucesso!" };
     }
 };
 exports.UserController = UserController;
 __decorate([
-    (0, common_1.Get)('/user'),
+    (0, common_1.Get)('/'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [typeof (_b = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _b : Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getPrivateData", null);
+__decorate([
+    (0, common_1.Put)('/edit-user-data'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_c = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _c : Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "editUserData", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('user'),
     __metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UserService !== "undefined" && user_service_1.UserService) === "function" ? _a : Object])
@@ -863,7 +898,7 @@ const passport_jwt_1 = __webpack_require__(31);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(config) {
         super({
-            secretOrKey: config.getOrThrow(process.env.JWT_SECRET),
+            secretOrKey: config.getOrThrow('JWT_SECRET'),
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false
         });
@@ -895,6 +930,166 @@ module.exports = require("passport-jwt");
 
 /***/ }),
 /* 32 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BadgeModule = void 0;
+const common_1 = __webpack_require__(6);
+const badge_controller_1 = __webpack_require__(33);
+const badge_service_1 = __webpack_require__(34);
+const prisma_service_1 = __webpack_require__(10);
+let BadgeModule = class BadgeModule {
+};
+exports.BadgeModule = BadgeModule;
+exports.BadgeModule = BadgeModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [badge_controller_1.BadgeController],
+        providers: [badge_service_1.BadgeService, prisma_service_1.PrismaService]
+    })
+], BadgeModule);
+
+
+/***/ }),
+/* 33 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var _a, _b;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BadgeController = void 0;
+const common_1 = __webpack_require__(6);
+const jwt_auth_guard_1 = __webpack_require__(16);
+const current_user_dto_1 = __webpack_require__(19);
+const current_user_decorator_1 = __webpack_require__(18);
+const badge_service_1 = __webpack_require__(34);
+let BadgeController = class BadgeController {
+    constructor(badgeService) {
+        this.badgeService = badgeService;
+    }
+    getRandomBadge(user) {
+        return this.badgeService.getRandomBadge(user.userId);
+    }
+};
+exports.BadgeController = BadgeController;
+__decorate([
+    (0, common_1.Post)('/get-random'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [typeof (_b = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _b : Object]),
+    __metadata("design:returntype", void 0)
+], BadgeController.prototype, "getRandomBadge", null);
+exports.BadgeController = BadgeController = __decorate([
+    (0, common_1.Controller)('badge'),
+    __metadata("design:paramtypes", [typeof (_a = typeof badge_service_1.BadgeService !== "undefined" && badge_service_1.BadgeService) === "function" ? _a : Object])
+], BadgeController);
+
+
+/***/ }),
+/* 34 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BadgeService = void 0;
+const common_1 = __webpack_require__(6);
+const getRandomBadgeAlgorithm_1 = __webpack_require__(35);
+const prisma_service_1 = __webpack_require__(10);
+let BadgeService = class BadgeService {
+    constructor(prismaService) {
+        this.prismaService = prismaService;
+    }
+    async getRandomBadge(userId) {
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+        if (!user)
+            throw new common_1.NotFoundException('Usuário não encontrado');
+        const badges = await this.prismaService.badge.findMany({
+            where: {
+                BadgesOfUser: {
+                    none: {
+                        userId
+                    }
+                }
+            }
+        });
+        if (badges.length === 0)
+            throw new common_1.BadRequestException('O usuário já possui todos os emblemas!');
+        const badgeAcquired = (0, getRandomBadgeAlgorithm_1.getRandomBadgeAlgorithm)(badges);
+        await this.prismaService.badgesOfUser.create({
+            data: {
+                badgeId: badgeAcquired.id,
+                userId
+            }
+        });
+        return badgeAcquired;
+    }
+};
+exports.BadgeService = BadgeService;
+exports.BadgeService = BadgeService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+], BadgeService);
+
+
+/***/ }),
+/* 35 */
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getRandomBadgeAlgorithm = void 0;
+const MAX_RARITY = 3;
+function getRandomBadgeAlgorithm(badges) {
+    const badgesArray = [];
+    badges.forEach((badge) => {
+        for (let i = 0; i < MAX_RARITY + 1 - badge.level; i++) {
+            badgesArray.push(badge);
+        }
+    });
+    return badgesArray[Math.floor(Math.random() * badgesArray.length)];
+}
+exports.getRandomBadgeAlgorithm = getRandomBadgeAlgorithm;
+
+
+/***/ }),
+/* 36 */
 /***/ ((module) => {
 
 "use strict";
@@ -962,7 +1157,7 @@ module.exports = require("cookie-parser");
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("0fefd10396c74ea44870")
+/******/ 		__webpack_require__.h = () => ("466c1402c0eb69c1cbd1")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */

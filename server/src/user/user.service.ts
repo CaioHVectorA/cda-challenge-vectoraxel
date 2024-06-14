@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto } from './dto/create-user-dto';
@@ -16,9 +16,22 @@ export class UserService {
         const userCreated = await this.prismaService.user.create({ data })
         return userCreated
     }
-    // async edit(edit: EditUserData): Promise<boolean> {}
-    // async adquireBadge(token: string) {}
+    async edit(edit: EditUserData): Promise<boolean> {
+        const { user_id, ...data } = edit
+        const user = await this.prismaService.user.findUnique({ where: { id: user_id } })
+        if (!user) throw new NotFoundException("Usuário não encontrado!")
+        if (!data.name && !data.profile_picture) throw new BadRequestException("Nada para editar!")
+        await this.prismaService.user.update({ where: { id: user_id }, data })
+        return true
+    }
     async findByEmail(email: string): Promise<User | null> {
     return this.prismaService.user.findFirst({ where: { email } })
+    }
+    async find(id: string) {
+        if (!id) throw new BadRequestException("Usuário não encontrado!")
+        const found = await this.prismaService.user.findUnique({ where: { id } })
+        if (!found) throw new NotFoundException("Usuário não encontrado!")
+        const { password, ...data } = found
+        return data
     }
 }
