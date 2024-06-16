@@ -40,9 +40,10 @@ model Badge {
 
 model BadgesOfUser {
   userId     String
+  badgeSlug  String
   badgeId    Int
-  User       User     @relation(fields: [userId], references: [id])
-  Badge      Badge    @relation(fields: [badgeId], references: [id])
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Badge      Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
   assignedAt DateTime @default(now())
   id         Int      @id @default(autoincrement())
 }

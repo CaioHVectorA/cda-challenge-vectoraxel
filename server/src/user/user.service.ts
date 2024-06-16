@@ -5,6 +5,8 @@ import { CreateUserDto } from './dto/create-user-dto';
 import { LoginUserDto } from './dto/login-user-dto';
 import { EditUserData } from './dto/edit-user-dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { writeFile } from 'fs/promises' 
+import { existsSync, mkdirSync } from 'fs';
 @Injectable()
 export class UserService {
     constructor(private readonly prismaService: PrismaService) {}
@@ -21,7 +23,20 @@ export class UserService {
         const user = await this.prismaService.user.findUnique({ where: { id: user_id } })
         if (!user) throw new NotFoundException("Usuário não encontrado!")
         if (!data.name && !data.profile_picture) throw new BadRequestException("Nada para editar!")
-        await this.prismaService.user.update({ where: { id: user_id }, data })
+        let profile_picture = user.profile_picture
+        if (data.profile_picture) {
+            const base64 = Buffer.from(data.profile_picture.replace(
+                /^data:image\/(jpeg|png|jpg);base64,/, ''
+            ), 'base64');
+            if (!base64) throw new BadRequestException("Imagem inválida!")
+            const profilePicturesFolder = process.cwd() + '/static/profile_pictures';
+            if (!existsSync(profilePicturesFolder)) {
+                mkdirSync(profilePicturesFolder);
+            }
+            await writeFile(`${profilePicturesFolder}/${user_id}.png`, base64)
+            profile_picture = `/profile_pictures/${user_id}.png`
+        }
+        await this.prismaService.user.update({ where: { id: user_id }, data: { name: data.name, profile_picture }})
         return true
     }
     async findByEmail(email: string): Promise<User | null> {
@@ -32,6 +47,15 @@ export class UserService {
         const found = await this.prismaService.user.findUnique({ where: { id } })
         if (!found) throw new NotFoundException("Usuário não encontrado!")
         const { password, ...data } = found
-        return data
+        const badges = await this.prismaService.badge.findMany({
+            where: {
+                BadgesOfUser: {
+                    some: {
+                        userId: id
+                    }
+                }
+            }
+        })
+        return  { ...data, badges }
     }
 }

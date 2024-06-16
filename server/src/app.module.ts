@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -12,9 +12,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from './prisma/prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { BadgeModule } from './badge/badge.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
-  imports: [PrismaModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, AuthModule, JwtModule, BadgeModule],
+  imports: [PrismaModule, ConfigModule.forRoot({ isGlobal: true }), UserModule, AuthModule, JwtModule, BadgeModule, ServeStaticModule.forRoot({
+    rootPath: process.env.NODE_ENV == 'dev' ? join(__dirname, '..', 'static') : join(__dirname, '..', '..', 'static')
+  })],
   controllers: [AppController, AuthController, UserController],
   providers: [AppService, AuthService, UserService, PrismaService],
 })

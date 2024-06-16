@@ -15,12 +15,12 @@ export class AuthController {
     if (!user) throw new UnauthorizedException("Credenciais inválidas!")
     const jwt = await this.authService.login(user)
     res.cookie('session', jwt.access_token, { httpOnly: true })
-    return res.status(200).json({ status: "Sucess", message: 'Authenticated' })
+    return res.status(200).json({ status: "Sucess", message: 'Authenticated', acess_token: jwt.access_token })
   }
   @Post('register')
   async signUp(@Body() SignUpDto: CreateUserDto, @Res() res: Response) {
     const jwt = await this.authService.register(SignUpDto)
     res.cookie('session', jwt.access_token, { httpOnly: true })
-    return res.status(200).json({ status: "Sucess", message: 'Authenticated' })
+    return res.status(200).json({ status: "Sucess", message: 'Authenticated', acess_token: jwt.access_token })
   }
 }
