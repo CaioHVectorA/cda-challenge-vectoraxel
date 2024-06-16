@@ -1,3 +1,4 @@
+
 export type Badge = {
     slug: string,
     image: string,
@@ -5,3 +6,4 @@ export type Badge = {
     name: string,
     level: 1 | 2 | 3
 }
+

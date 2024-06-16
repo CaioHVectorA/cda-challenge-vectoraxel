@@ -4,21 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:client": "cd client && npm run dev",
-    "dev:server": "cd server && npm run start:dev",
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\""
+    "setup": "cd server && npm i && npx prisma migrate dev && npm run seed && npm run build && cd ../client && npm i && npm run build && cd ../"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^1.7.2",
-    "concurrently": "^8.2.2",
-    "jimp": "^0.22.12",
-    "react-avatar": "^5.0.3",
-    "webp-converter": "^2.3.3"
-  },
-  "devDependencies": {
-    "parallelshell": "^3.0.2"
-  }
+  "license": "ISC"
 }
