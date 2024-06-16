@@ -9,7 +9,7 @@ Esse é meu projeto para o desafio para a vaga de desenvolvedor FullStack no Cid
 Para rodar o projeto, você precisa, inicialmente, ter o Node instalado e um banco de dados MySQL a disposição. Após isso, siga os passos abaixo:
 - Clone o repositório
 - Agora você deve adicionar as variáveis de ambiente. Entre na pasta de frontend e note que há um arquivo `.env.example`. Copie o conteúdo dele e crie um arquivo `.env.local` com o mesmo conteúdo. Faça o mesmo para a pasta de backend. Após adicionar um DATABASE_URL, prossiga para o próximo passo:
-- Você vai se deparar com uma pasta para o backend e outra para o frontend. Antes de entrar em cada uma, você pode rodar `npm run dev` para instalar as dependências, trabalhar nas migrations(você deve ter setado o DATABASE_URL!), fazer o seed e o build em ambos.(Isso pode demorar um minuto).
+- Você vai se deparar com uma pasta para o backend e outra para o frontend. Antes de entrar em cada uma, você pode rodar `npm run dev` para instalar as dependências, trabalhar nas migrations(você deve ter setado o DATABASE_URL!), fazer o seed e o build em ambos.(Isso pode demorar um minuto); Caso dê um erro relacionado a `cannot read properties of undefined client modules`, você pode simplesmente remover a pasta node_modules do client/ e instalá-la novamente, que funcionará.
 - Agora, você pode rodar as aplicações. Splitte o terminal e entre nas pastas. No frontend, você pode rodar um npm run dev ou npm start e no backend, um npm run start:dev ou npm start:prod.
 - E é só isso! O backend está rodando na porta 3333 e o frontend na 3000.
 
