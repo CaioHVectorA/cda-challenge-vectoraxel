@@ -192,13 +192,21 @@ module.exports = function (updatedModules, renewedModules) {
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __webpack_require__(4);
-const app_module_1 = __webpack_require__(5);
-const cookieParser = __webpack_require__(40);
-const express_1 = __webpack_require__(30);
+const swagger_1 = __webpack_require__(5);
+const app_module_1 = __webpack_require__(6);
+const cookieParser = __webpack_require__(41);
+const express_1 = __webpack_require__(42);
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(cookieParser());
     app.use((0, express_1.json)({ limit: '10mb' }));
+    const config = new swagger_1.DocumentBuilder()
+        .setTitle('NestJS CDA Emblemas API')
+        .setDescription('API para o desafio de projeto CDA.Emblemas')
+        .setVersion('1.0')
+        .build();
+    const document = swagger_1.SwaggerModule.createDocument(app, config);
+    swagger_1.SwaggerModule.setup('api', app, document);
     app.enableCors({ allowedHeaders: '*', origin: '*', methods: 'POST,GET,PUT,DELETE', credentials: true });
     await app.listen(3333);
     if (true) {
@@ -218,6 +226,13 @@ module.exports = require("@nestjs/core");
 
 /***/ }),
 /* 5 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("@nestjs/swagger");
+
+/***/ }),
+/* 6 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -230,22 +245,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = void 0;
-const common_1 = __webpack_require__(6);
-const app_controller_1 = __webpack_require__(7);
-const app_service_1 = __webpack_require__(8);
-const prisma_module_1 = __webpack_require__(9);
-const user_module_1 = __webpack_require__(12);
-const auth_module_1 = __webpack_require__(22);
-const auth_controller_1 = __webpack_require__(26);
-const user_controller_1 = __webpack_require__(17);
-const auth_service_1 = __webpack_require__(23);
-const user_service_1 = __webpack_require__(13);
-const jwt_1 = __webpack_require__(24);
-const prisma_service_1 = __webpack_require__(10);
-const config_1 = __webpack_require__(32);
-const badge_module_1 = __webpack_require__(34);
-const serve_static_1 = __webpack_require__(38);
-const path_1 = __webpack_require__(39);
+const common_1 = __webpack_require__(7);
+const app_controller_1 = __webpack_require__(8);
+const app_service_1 = __webpack_require__(9);
+const prisma_module_1 = __webpack_require__(10);
+const user_module_1 = __webpack_require__(13);
+const auth_module_1 = __webpack_require__(23);
+const auth_controller_1 = __webpack_require__(27);
+const user_controller_1 = __webpack_require__(18);
+const auth_service_1 = __webpack_require__(24);
+const user_service_1 = __webpack_require__(14);
+const jwt_1 = __webpack_require__(25);
+const prisma_service_1 = __webpack_require__(11);
+const config_1 = __webpack_require__(33);
+const badge_module_1 = __webpack_require__(35);
+const serve_static_1 = __webpack_require__(39);
+const path_1 = __webpack_require__(40);
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -261,43 +276,11 @@ exports.AppModule = AppModule = __decorate([
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("@nestjs/common");
-
-/***/ }),
-/* 7 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var _a;
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppController = void 0;
-const common_1 = __webpack_require__(6);
-const app_service_1 = __webpack_require__(8);
-let AppController = class AppController {
-    constructor(appService) {
-        this.appService = appService;
-    }
-};
-exports.AppController = AppController;
-exports.AppController = AppController = __decorate([
-    (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof app_service_1.AppService !== "undefined" && app_service_1.AppService) === "function" ? _a : Object])
-], AppController);
-
 
 /***/ }),
 /* 8 */
@@ -311,15 +294,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.AppService = void 0;
-const common_1 = __webpack_require__(6);
-let AppService = class AppService {
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-exports.AppService = AppService;
-exports.AppService = AppService = __decorate([
-    (0, common_1.Injectable)()
-], AppService);
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AppController = void 0;
+const openapi = __webpack_require__(5);
+const common_1 = __webpack_require__(7);
+const app_service_1 = __webpack_require__(9);
+let AppController = class AppController {
+    constructor(appService) {
+        this.appService = appService;
+    }
+};
+exports.AppController = AppController;
+exports.AppController = AppController = __decorate([
+    (0, common_1.Controller)(),
+    __metadata("design:paramtypes", [app_service_1.AppService])
+], AppController);
 
 
 /***/ }),
@@ -335,18 +327,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.PrismaModule = void 0;
-const common_1 = __webpack_require__(6);
-const prisma_service_1 = __webpack_require__(10);
-let PrismaModule = class PrismaModule {
+exports.AppService = void 0;
+const common_1 = __webpack_require__(7);
+let AppService = class AppService {
 };
-exports.PrismaModule = PrismaModule;
-exports.PrismaModule = PrismaModule = __decorate([
-    (0, common_1.Module)({
-        providers: [prisma_service_1.PrismaService],
-        exports: [prisma_service_1.PrismaService]
-    })
-], PrismaModule);
+exports.AppService = AppService;
+exports.AppService = AppService = __decorate([
+    (0, common_1.Injectable)()
+], AppService);
 
 
 /***/ }),
@@ -362,9 +350,36 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.PrismaModule = void 0;
+const common_1 = __webpack_require__(7);
+const prisma_service_1 = __webpack_require__(11);
+let PrismaModule = class PrismaModule {
+};
+exports.PrismaModule = PrismaModule;
+exports.PrismaModule = PrismaModule = __decorate([
+    (0, common_1.Module)({
+        providers: [prisma_service_1.PrismaService],
+        exports: [prisma_service_1.PrismaService]
+    })
+], PrismaModule);
+
+
+/***/ }),
+/* 11 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PrismaService = void 0;
-const common_1 = __webpack_require__(6);
-const client_1 = __webpack_require__(11);
+const common_1 = __webpack_require__(7);
+const client_1 = __webpack_require__(12);
 let PrismaService = class PrismaService extends client_1.PrismaClient {
     async onModuleDestroy() {
         await this.$disconnect();
@@ -380,41 +395,11 @@ exports.PrismaService = PrismaService = __decorate([
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("@prisma/client");
-
-/***/ }),
-/* 12 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.UserModule = void 0;
-const common_1 = __webpack_require__(6);
-const user_service_1 = __webpack_require__(13);
-const user_controller_1 = __webpack_require__(17);
-const prisma_service_1 = __webpack_require__(10);
-let UserModule = class UserModule {
-};
-exports.UserModule = UserModule;
-exports.UserModule = UserModule = __decorate([
-    (0, common_1.Module)({
-        providers: [user_service_1.UserService, prisma_service_1.PrismaService],
-        controllers: [user_controller_1.UserController],
-        exports: [user_service_1.UserService],
-    })
-], UserModule);
-
 
 /***/ }),
 /* 13 */
@@ -428,17 +413,46 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.UserModule = void 0;
+const common_1 = __webpack_require__(7);
+const user_service_1 = __webpack_require__(14);
+const user_controller_1 = __webpack_require__(18);
+const prisma_service_1 = __webpack_require__(11);
+let UserModule = class UserModule {
+};
+exports.UserModule = UserModule;
+exports.UserModule = UserModule = __decorate([
+    (0, common_1.Module)({
+        providers: [user_service_1.UserService, prisma_service_1.PrismaService],
+        controllers: [user_controller_1.UserController],
+        exports: [user_service_1.UserService],
+    })
+], UserModule);
+
+
+/***/ }),
+/* 14 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserService = void 0;
-const common_1 = __webpack_require__(6);
-const bcrypt = __webpack_require__(14);
-const prisma_service_1 = __webpack_require__(10);
-const promises_1 = __webpack_require__(15);
-const fs_1 = __webpack_require__(16);
+const common_1 = __webpack_require__(7);
+const bcrypt = __webpack_require__(15);
+const prisma_service_1 = __webpack_require__(11);
+const promises_1 = __webpack_require__(16);
+const fs_1 = __webpack_require__(17);
 let UserService = class UserService {
     constructor(prismaService) {
         this.prismaService = prismaService;
@@ -499,33 +513,33 @@ let UserService = class UserService {
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], UserService);
 
-
-/***/ }),
-/* 14 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("bcrypt");
 
 /***/ }),
 /* 15 */
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("fs/promises");
+module.exports = require("bcrypt");
 
 /***/ }),
 /* 16 */
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("fs");
+module.exports = require("fs/promises");
 
 /***/ }),
 /* 17 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+/* 18 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -542,14 +556,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UserController = void 0;
-const common_1 = __webpack_require__(6);
-const user_service_1 = __webpack_require__(13);
-const jwt_auth_guard_1 = __webpack_require__(18);
-const current_user_decorator_1 = __webpack_require__(20);
-const current_user_dto_1 = __webpack_require__(21);
+const openapi = __webpack_require__(5);
+const common_1 = __webpack_require__(7);
+const user_service_1 = __webpack_require__(14);
+const jwt_auth_guard_1 = __webpack_require__(19);
+const current_user_decorator_1 = __webpack_require__(21);
+const current_user_dto_1 = __webpack_require__(22);
+const swagger_1 = __webpack_require__(5);
+const user_dto_1 = __webpack_require__(43);
+const response_dto_1 = __webpack_require__(31);
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -566,30 +583,39 @@ let UserController = class UserController {
 };
 exports.UserController = UserController;
 __decorate([
+    (0, swagger_1.ApiResponse)({ status: 200, type: user_dto_1.UserDto, isArray: false, description: 'Resposta com dados do usuário' }),
+    (0, swagger_1.ApiTags)('user'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Get)('/'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _b : Object]),
+    __metadata("design:paramtypes", [current_user_dto_1.CurrentUserDto]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getPrivateData", null);
 __decorate([
     (0, common_1.Put)('/edit-user-data'),
+    (0, swagger_1.ApiResponse)({ status: 200, type: response_dto_1.ResponseDto, isArray: false, description: 'Resposta com confirmação do sucesso' }),
+    (0, swagger_1.ApiTags)('user'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Get)('/'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    openapi.ApiResponse({ status: 200 }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_c = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _c : Object, Object]),
+    __metadata("design:paramtypes", [current_user_dto_1.CurrentUserDto, Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "editUserData", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('user'),
-    __metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UserService !== "undefined" && user_service_1.UserService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -602,8 +628,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtAuthGuard = void 0;
-const common_1 = __webpack_require__(6);
-const passport_1 = __webpack_require__(19);
+const common_1 = __webpack_require__(7);
+const passport_1 = __webpack_require__(20);
 let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
 };
 exports.JwtAuthGuard = JwtAuthGuard;
@@ -613,21 +639,21 @@ exports.JwtAuthGuard = JwtAuthGuard = __decorate([
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("@nestjs/passport");
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CurrentUser = void 0;
-const common_1 = __webpack_require__(6);
+const common_1 = __webpack_require__(7);
 exports.CurrentUser = (0, common_1.createParamDecorator)((data, ctx) => {
     const request = ctx.switchToHttp().getRequest();
     return request.user;
@@ -635,7 +661,7 @@ exports.CurrentUser = (0, common_1.createParamDecorator)((data, ctx) => {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -648,7 +674,7 @@ exports.CurrentUserDto = CurrentUserDto;
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -661,14 +687,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
-const common_1 = __webpack_require__(6);
-const auth_service_1 = __webpack_require__(23);
-const user_module_1 = __webpack_require__(12);
-const jwt_1 = __webpack_require__(24);
-const auth_controller_1 = __webpack_require__(26);
-const constants_1 = __webpack_require__(25);
-const passport_1 = __webpack_require__(19);
-const jwt_strategy_1 = __webpack_require__(31);
+const common_1 = __webpack_require__(7);
+const auth_service_1 = __webpack_require__(24);
+const user_module_1 = __webpack_require__(13);
+const jwt_1 = __webpack_require__(25);
+const auth_controller_1 = __webpack_require__(27);
+const constants_1 = __webpack_require__(26);
+const passport_1 = __webpack_require__(20);
+const jwt_strategy_1 = __webpack_require__(32);
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -692,7 +718,7 @@ exports.AuthModule = AuthModule = __decorate([
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -706,14 +732,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthService = void 0;
-const common_1 = __webpack_require__(6);
-const jwt_1 = __webpack_require__(24);
-const bcrypt = __webpack_require__(14);
-const user_service_1 = __webpack_require__(13);
-const constants_1 = __webpack_require__(25);
+const common_1 = __webpack_require__(7);
+const jwt_1 = __webpack_require__(25);
+const bcrypt = __webpack_require__(15);
+const user_service_1 = __webpack_require__(14);
+const constants_1 = __webpack_require__(26);
 let AuthService = class AuthService {
     constructor(userService, jwtService) {
         this.userService = userService;
@@ -745,19 +770,20 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof user_service_1.UserService !== "undefined" && user_service_1.UserService) === "function" ? _a : Object, typeof (_b = typeof jwt_1.JwtService !== "undefined" && jwt_1.JwtService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [user_service_1.UserService,
+        jwt_1.JwtService])
 ], AuthService);
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("@nestjs/jwt");
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -770,7 +796,7 @@ exports.jwtConstants = {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -787,14 +813,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b, _c, _d, _e;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthController = void 0;
-const common_1 = __webpack_require__(6);
-const auth_service_1 = __webpack_require__(23);
-const create_user_dto_1 = __webpack_require__(27);
-const login_user_dto_1 = __webpack_require__(29);
-const express_1 = __webpack_require__(30);
+const openapi = __webpack_require__(5);
+const common_1 = __webpack_require__(7);
+const auth_service_1 = __webpack_require__(24);
+const create_user_dto_1 = __webpack_require__(28);
+const login_user_dto_1 = __webpack_require__(30);
+const swagger_1 = __webpack_require__(5);
+const response_dto_1 = __webpack_require__(31);
+const example = {
+    payload: {
+        value: {
+            email: 'teste@gm.co',
+            password: '12345678'
+        }
+    }
+};
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -815,30 +850,38 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
+    (0, swagger_1.ApiBody)({ type: login_user_dto_1.LoginUserDto, examples: example }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: response_dto_1.ResponseDto, isArray: false, description: 'Resposta com autenticação' }),
+    (0, swagger_1.ApiTags)('auth'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, common_1.Post)('login'),
+    openapi.ApiResponse({ status: common_1.HttpStatus.OK }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof login_user_dto_1.LoginUserDto !== "undefined" && login_user_dto_1.LoginUserDto) === "function" ? _b : Object, typeof (_c = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _c : Object]),
+    __metadata("design:paramtypes", [login_user_dto_1.LoginUserDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signIn", null);
 __decorate([
+    (0, swagger_1.ApiBody)({ type: login_user_dto_1.LoginUserDto }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: response_dto_1.ResponseDto, isArray: false, description: 'Resposta com autenticação' }),
+    (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Post)('register'),
+    openapi.ApiResponse({ status: 201 }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_d = typeof create_user_dto_1.CreateUserDto !== "undefined" && create_user_dto_1.CreateUserDto) === "function" ? _d : Object, typeof (_e = typeof express_1.Response !== "undefined" && express_1.Response) === "function" ? _e : Object]),
+    __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signUp", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [typeof (_a = typeof auth_service_1.AuthService !== "undefined" && auth_service_1.AuthService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -854,7 +897,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CreateUserDto = void 0;
-const class_validator_1 = __webpack_require__(28);
+const class_validator_1 = __webpack_require__(29);
 class CreateUserDto {
 }
 exports.CreateUserDto = CreateUserDto;
@@ -869,31 +912,42 @@ __decorate([
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("class-validator");
 
 /***/ }),
-/* 29 */
-/***/ ((__unused_webpack_module, exports) => {
+/* 30 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
 
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.LoginUserDto = void 0;
+const swagger_1 = __webpack_require__(5);
 class LoginUserDto {
 }
 exports.LoginUserDto = LoginUserDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LoginUserDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], LoginUserDto.prototype, "password", void 0);
 
-
-/***/ }),
-/* 30 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("express");
 
 /***/ }),
 /* 31 */
@@ -910,13 +964,47 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ResponseDto = void 0;
+const swagger_1 = __webpack_require__(5);
+class ResponseDto {
+}
+exports.ResponseDto = ResponseDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResponseDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResponseDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], ResponseDto.prototype, "acess_token", void 0);
+
+
+/***/ }),
+/* 32 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.JwtStrategy = void 0;
-const common_1 = __webpack_require__(6);
-const config_1 = __webpack_require__(32);
-const passport_1 = __webpack_require__(19);
-const passport_jwt_1 = __webpack_require__(33);
+const common_1 = __webpack_require__(7);
+const config_1 = __webpack_require__(33);
+const passport_1 = __webpack_require__(20);
+const passport_jwt_1 = __webpack_require__(34);
 let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
     constructor(config) {
         super({
@@ -932,52 +1020,23 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
 exports.JwtStrategy = JwtStrategy;
 exports.JwtStrategy = JwtStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof config_1.ConfigService !== "undefined" && config_1.ConfigService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [config_1.ConfigService])
 ], JwtStrategy);
 
-
-/***/ }),
-/* 32 */
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("@nestjs/config");
 
 /***/ }),
 /* 33 */
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("passport-jwt");
+module.exports = require("@nestjs/config");
 
 /***/ }),
 /* 34 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ ((module) => {
 
 "use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BadgeModule = void 0;
-const common_1 = __webpack_require__(6);
-const badge_controller_1 = __webpack_require__(35);
-const badge_service_1 = __webpack_require__(36);
-const prisma_service_1 = __webpack_require__(10);
-let BadgeModule = class BadgeModule {
-};
-exports.BadgeModule = BadgeModule;
-exports.BadgeModule = BadgeModule = __decorate([
-    (0, common_1.Module)({
-        controllers: [badge_controller_1.BadgeController],
-        providers: [badge_service_1.BadgeService, prisma_service_1.PrismaService]
-    })
-], BadgeModule);
-
+module.exports = require("passport-jwt");
 
 /***/ }),
 /* 35 */
@@ -991,52 +1050,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-var _a, _b;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.BadgeController = void 0;
-const common_1 = __webpack_require__(6);
-const jwt_auth_guard_1 = __webpack_require__(18);
-const current_user_dto_1 = __webpack_require__(21);
-const current_user_decorator_1 = __webpack_require__(20);
-const badge_service_1 = __webpack_require__(36);
-let BadgeController = class BadgeController {
-    constructor(badgeService) {
-        this.badgeService = badgeService;
-    }
-    getRandomBadge(user) {
-        return this.badgeService.getRandomBadge(user.userId);
-    }
-    getUsersByBadgeSlug(slug, page = 1) {
-        return this.badgeService.getUsersByBadgeSlug(slug, page);
-    }
+exports.BadgeModule = void 0;
+const common_1 = __webpack_require__(7);
+const badge_controller_1 = __webpack_require__(36);
+const badge_service_1 = __webpack_require__(37);
+const prisma_service_1 = __webpack_require__(11);
+let BadgeModule = class BadgeModule {
 };
-exports.BadgeController = BadgeController;
-__decorate([
-    (0, common_1.Post)('/get-random'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, (0, current_user_decorator_1.CurrentUser)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [typeof (_b = typeof current_user_dto_1.CurrentUserDto !== "undefined" && current_user_dto_1.CurrentUserDto) === "function" ? _b : Object]),
-    __metadata("design:returntype", void 0)
-], BadgeController.prototype, "getRandomBadge", null);
-__decorate([
-    (0, common_1.Get)('/users-by-badge-slug/:slug'),
-    __param(0, (0, common_1.Param)('slug')),
-    __param(1, (0, common_1.Query)('page')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
-    __metadata("design:returntype", void 0)
-], BadgeController.prototype, "getUsersByBadgeSlug", null);
-exports.BadgeController = BadgeController = __decorate([
-    (0, common_1.Controller)('badge'),
-    __metadata("design:paramtypes", [typeof (_a = typeof badge_service_1.BadgeService !== "undefined" && badge_service_1.BadgeService) === "function" ? _a : Object])
-], BadgeController);
+exports.BadgeModule = BadgeModule;
+exports.BadgeModule = BadgeModule = __decorate([
+    (0, common_1.Module)({
+        controllers: [badge_controller_1.BadgeController],
+        providers: [badge_service_1.BadgeService, prisma_service_1.PrismaService]
+    })
+], BadgeModule);
 
 
 /***/ }),
@@ -1054,12 +1082,81 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BadgeController = void 0;
+const openapi = __webpack_require__(5);
+const common_1 = __webpack_require__(7);
+const jwt_auth_guard_1 = __webpack_require__(19);
+const current_user_dto_1 = __webpack_require__(22);
+const current_user_decorator_1 = __webpack_require__(21);
+const badge_service_1 = __webpack_require__(37);
+const user_dto_1 = __webpack_require__(43);
+const swagger_1 = __webpack_require__(5);
+let BadgeController = class BadgeController {
+    constructor(badgeService) {
+        this.badgeService = badgeService;
+    }
+    getRandomBadge(user) {
+        return this.badgeService.getRandomBadge(user.userId);
+    }
+    getUsersByBadgeSlug(slug, page = 1) {
+        return this.badgeService.getUsersByBadgeSlug(slug, page);
+    }
+};
+exports.BadgeController = BadgeController;
+__decorate([
+    (0, swagger_1.ApiResponse)({ status: 200, type: user_dto_1.BadgeDTO, isArray: false, description: 'Resposta com o emblema obtido' }),
+    (0, swagger_1.ApiTags)('badge'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Post)('/get-random'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    openapi.ApiResponse({ status: 201 }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [current_user_dto_1.CurrentUserDto]),
+    __metadata("design:returntype", void 0)
+], BadgeController.prototype, "getRandomBadge", null);
+__decorate([
+    (0, swagger_1.ApiResponse)({ status: 200, type: user_dto_1.GetAllUserByBadgeSlugDto, isArray: true, description: 'Resposta com todos os usuários que possuem um emblema com o slug dado' }),
+    (0, swagger_1.ApiTags)('badge'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Get)('/users-by-badge-slug/:slug'),
+    openapi.ApiResponse({ status: 200 }),
+    __param(0, (0, common_1.Param)('slug')),
+    __param(1, (0, common_1.Query)('page')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", void 0)
+], BadgeController.prototype, "getUsersByBadgeSlug", null);
+exports.BadgeController = BadgeController = __decorate([
+    (0, common_1.Controller)('badge'),
+    __metadata("design:paramtypes", [badge_service_1.BadgeService])
+], BadgeController);
+
+
+/***/ }),
+/* 37 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BadgeService = void 0;
-const common_1 = __webpack_require__(6);
-const getRandomBadgeAlgorithm_1 = __webpack_require__(37);
-const prisma_service_1 = __webpack_require__(10);
+const common_1 = __webpack_require__(7);
+const getRandomBadgeAlgorithm_1 = __webpack_require__(38);
+const prisma_service_1 = __webpack_require__(11);
 let BadgeService = class BadgeService {
     constructor(prismaService) {
         this.prismaService = prismaService;
@@ -1125,12 +1222,12 @@ let BadgeService = class BadgeService {
 exports.BadgeService = BadgeService;
 exports.BadgeService = BadgeService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof prisma_service_1.PrismaService !== "undefined" && prisma_service_1.PrismaService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], BadgeService);
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1151,25 +1248,113 @@ exports.getRandomBadgeAlgorithm = getRandomBadgeAlgorithm;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("@nestjs/serve-static");
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("path");
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = require("cookie-parser");
+
+/***/ }),
+/* 42 */
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("express");
+
+/***/ }),
+/* 43 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.GetAllUserByBadgeSlugDto = exports.UserDto = exports.BadgeDTO = void 0;
+const swagger_1 = __webpack_require__(5);
+class BadgeDTO {
+}
+exports.BadgeDTO = BadgeDTO;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], BadgeDTO.prototype, "slug", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], BadgeDTO.prototype, "image", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: Number }),
+    __metadata("design:type", Number)
+], BadgeDTO.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], BadgeDTO.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: Number }),
+    __metadata("design:type", Number)
+], BadgeDTO.prototype, "level", void 0);
+class UserDto {
+}
+exports.UserDto = UserDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], UserDto.prototype, "id", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], UserDto.prototype, "name", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], UserDto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], UserDto.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], UserDto.prototype, "profile_picture", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ isArray: true, type: BadgeDTO }),
+    __metadata("design:type", Object)
+], UserDto.prototype, "badges", void 0);
+class GetAllUserByBadgeSlugDto {
+}
+exports.GetAllUserByBadgeSlugDto = GetAllUserByBadgeSlugDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: UserDto }),
+    __metadata("design:type", UserDto)
+], GetAllUserByBadgeSlugDto.prototype, "user", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: BadgeDTO }),
+    __metadata("design:type", BadgeDTO)
+], GetAllUserByBadgeSlugDto.prototype, "badge", void 0);
+
 
 /***/ })
 /******/ 	]);
@@ -1233,7 +1418,7 @@ module.exports = require("cookie-parser");
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("c1ba18992447a3c0b5d1")
+/******/ 		__webpack_require__.h = () => ("ac99ab32e10d25dfc01b")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
